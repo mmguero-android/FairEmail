@@ -546,7 +546,7 @@ public class HtmlHelper {
                                 if (color == null)
                                     element.removeAttr("color");
                                 else {
-                                    if (view)
+                                    if (view || Helper.isDarkTheme(context))
                                         color = adjustColor(dark, textColorPrimary, color);
 
                                     // fromHtml does not support transparency
