@@ -194,13 +194,61 @@ are preferred in the form of [pull requests](https://help.github.com/articles/cr
 
 *Source code*
 
-Building FairEmail from source code is straightforward with [Android Studio](http://developer.android.com/sdk/).
-It is expected that you can solve build problems yourself, so there is no support on building.
-
 Source code contributions are preferred in the form of [pull requests](https://help.github.com/articles/creating-a-pull-request/).
 Please [contact me](https://contact.faircode.eu/?product=other) first to tell me what your plans are.
 
 Please note that by contributing you agree to the license below, including the copyright, without any additional terms or conditions.
+
+## Building
+
+You can build an **unofficial**, **self-signed** APK from source using [Docker Android Build Box](https://github.com/mingchen/docker-android-build-box):
+
+```
+# pull the mingc/android-build-box docker image
+$ docker pull mingc/android-build-box:latest
+...
+
+# navigate to the directory containing the source code
+$ cd ./FairEmail
+
+# generate a keystore to use for the self-signed APK and write keystore.properties
+$ docker run -it --rm -u $(id -u) -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; keytool -genkey -v -keystore release.keystore -alias fairemail-release -keyalg RSA -keysize 2048 -validity 10000 -keypass changeit -storepass changeit'
+What is your first and last name?
+  [Unknown]:  Roland Deschain
+What is the name of your organizational unit?
+  [Unknown]:  
+What is the name of your organization?
+  [Unknown]:  Tet Corporation
+What is the name of your City or Locality?
+  [Unknown]:  
+What is the name of your State or Province?
+  [Unknown]:  
+What is the two-letter country code for this unit?
+  [Unknown]:  US
+Is CN=Roland Deschain, OU=Unknown, O=Tet Corporation, L=Unknown, ST=Unknown, C=US correct?
+  [no]:  yes
+
+Generating 2,048 bit RSA key pair and self-signed certificate (SHA256withRSA) with a validity of 10,000 days
+    for: CN=Roland Deschain, OU=Unknown, O=Tet Corporation, L=Unknown, ST=Unknown, C=US
+[Storing release.keystore]
+
+Warning:
+The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore release.keystore -destkeystore release.keystore -deststoretype pkcs12".
+
+$ echo -e 'storePassword=changeit\nkeyPassword=changeit\nkeyAlias=fairemail-release\nstoreFile=../release.keystore' > keystore.properties
+
+# run the build
+$ docker run --rm -v $(pwd):/project mingc/android-build-box bash -c 'cd /project; bash ./gradlew assembleRelease'
+...
+BUILD SUCCESSFUL in 11m 15s
+108 actionable tasks: 75 executed, 33 up-to-date
+
+# check the APK file(s) built
+$ ls -lh ./app/build/outputs/apk/*/*/*.apk
+-rw-r--r-- 1 root root 14M Jun 19 23:01 ./app/build/outputs/apk/fdroid/release/FairEmail-v1.1208-fdroid-release.apk
+-rw-r--r-- 1 root root 14M Jun 19 23:00 ./app/build/outputs/apk/github/release/FairEmail-v1.1208-github-release.apk
+-rw-r--r-- 1 root root 14M Jun 19 23:01 ./app/build/outputs/apk/play/release/FairEmail-v1.1208-play-release.apk
+```
 
 ## Attribution
 

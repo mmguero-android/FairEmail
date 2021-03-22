@@ -2,6 +2,7 @@
 tools/config.sh
 local.properties
 keystore.properties
+release.keystore
 crowdin.properties
 .gradle
 .idea/caches

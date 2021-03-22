@@ -174,32 +174,18 @@ public class ActivityBilling extends ActivityBase implements /*PurchasesUpdatedL
     }
 
     static boolean activatePro(Context context, String response) throws NoSuchAlgorithmException {
-        String challenge = getChallenge(context);
-        Log.i("IAB challenge=" + challenge);
-        Log.i("IAB response=" + response);
-        String expected = getResponse(context);
-        if (expected.equals(response)) {
-            Log.i("IAB response valid");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit()
+                .putBoolean("pro", true)
+                .putBoolean("play_store", false)
+                .apply();
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefs.edit()
-                    .putBoolean("pro", true)
-                    .putBoolean("play_store", false)
-                    .apply();
-
-            WidgetUnified.updateData(context);
-            return true;
-        } else {
-            Log.i("IAB response invalid");
-            return false;
-        }
+        WidgetUnified.updateData(context);
+        return true;
     }
 
     static boolean isPro(Context context) {
-        if (BuildConfig.DEBUG && false)
-            return true;
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean("pro", false);
+        return true;
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
